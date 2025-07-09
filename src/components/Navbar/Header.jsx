@@ -36,7 +36,7 @@ const NavLink = styled(Link)`
   color: #ffffff;
   text-decoration: none;
   font-size: 2.625rem; // 42px converted to rem (42/16)
-  font-weight: 500;
+  font-family: "Archivo Narrow";
   &:hover {
     color: var(--text-1);
   }

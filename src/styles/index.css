@@ -13,16 +13,22 @@
 }
 
 @font-face {
-  font-family: Archivo Narrow;
-  src: url(User/tresi/Projects/TechMobile/TechMobile/src/assets/fonts/static/ArchivoNarrow-Bold.ttf)
+  font-family: "Archivo Narrow";
+  src: url("../assets/fonts/static/ArchivoNarrow-Bold.ttf") format("truetype");
+  font-weight: 700; /* Matches your styled-component */
+  font-style: bold;
 }
 @font-face {
-  font-family: Libre Baskerville;
-  src: url(User/tresi/Projects/TechMobile/TechMobile/src/assets/fonts/Libre_Baskerville/LibreBaskerville-Italic.ttf)
+  font-family: "Libre Baskerville";
+  src: url("../assets/fonts/Libre_Baskerville/LibreBaskerville-Italic.ttf") format("truetype");
+  font-weight: 400; /* Italic is typically normal weight */
+  font-style: italic;
 }
 @font-face {
-  font-family: Tenor Sans;
-  src: url(User/tresi/Projects/TechMobile/TechMobile/src/assets/fonts/Tenor_Sans/TenorSans-Regular.ttf)
+  font-family: "Tenor Sans";
+  src: url("../assets/fonts/Tenor_Sans/TenorSans-Regular.ttf") format("truetype");
+  font-weight: 400; /* Regular weight */
+  font-style: normal;
 }
 
 

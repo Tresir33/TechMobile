@@ -4,6 +4,7 @@ import '../styles/index.css';
 import wallpaper from '../assets/images/Wallpaper 4k.png';
 import samsungS24Plus from '../assets/images/Samsung S24 plus.webp';
 import usbCCharger from '../assets/images/USB-C charger.webp';
+import jblHeadset from '../assets/images/JBL-headset.webp';
 
 // Styled-components for the homepage
 const HeroSection = styled.div`
@@ -16,7 +17,6 @@ const HeroSection = styled.div`
   background-repeat: no-repeat;
 `;
 
-
 const WelcomeText = styled.h1`
   position: absolute;
   top: 22%;
@@ -24,7 +24,7 @@ const WelcomeText = styled.h1`
   transform: translateX(-50%); // Center horizontally
   font-size: 2.625rem; // 42px converted to rem (42/16)
   color: var(--texts); // White text from index.css
-  font-weight: 700;
+  font-family: "Archivo Narrow";
   margin: 0;
   &:hover {
     color: var(--text-1); // Hover effect using text-1 color from index.css
@@ -95,7 +95,7 @@ const ControlButton = styled.button`
 
 const ProductsSection = styled.div`
   width: 100%;
-  padding: 3.5rem 2rem; // Horizontal padding for content
+  padding: 3.5rem 0; // Horizontal padding for content
   background-color: var(--Bg-1); // Match slider background
   display: flex;
   flex-direction: column;
@@ -105,50 +105,56 @@ const ProductsSection = styled.div`
 const ProductsTitle = styled.h2`
   font-size: 2.625rem; // Slightly smaller than WelcomeText for hierarchy
   font-weight: 700;
-  font-family: Archivo Narrow;
+  font-family: "Archivo Narrow";
   color: #F2E782; // Specified title color
   text-align: left;
   margin: 0;
-  padding-bottom: 2vw; // 2% spacing below title
+  padding: 1vw 0 2vw 2vw; // 2% spacing below title
 `;
 
 const ProductsContent = styled.div`
   display: flex;
   flex-wrap: wrap; // Allow stacking on smaller screens
-  gap: 2rem; // Space between left and right halves
+  gap: 5rem; // Space between left and right halves
   width: 100%;
 `;
 
 const ProductImageLarge = styled.img`
-  width: 40%; // Half the screen width
+  width: 35%; // Half the screen width
   max-width: 40vw; // Ensure responsiveness
-  height: auto; // Maintain aspect ratio
+  height: 60%; // Maintain aspect ratio
   object-fit: contain; // Prevent distortion
   flex: 0 0 50%; // Fixed width for layout
-  border-radius: 1.2rem;
+  border-radius: 10%;
   margin-left: 6%;
 `;
 
 const ProductInfo = styled.div`
   flex: 0 0 45%; // Slightly less than 50% to account for gap
-  display: flex;
-  flex-direction: column; // Stack text and small image vertically
-  gap: 1rem; // Space between text and small image
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr; // 2 equal columns
+  grid-template-rows: 1fr 1fr; // 2 equal rows
+  gap: 1rem; // Space between grid items
+  height: fit-content; // Adjust to content height
 `;
 
 const ProductText = styled.p`
-  font-size: 1rem;
+  font-size: 1.5rem;
+  font-family: "Tenor Sans";
   color: #928F88; // Specified text color
-  margin: 0;
+  margin: 0 0 0 1%;
   line-height: 1.5;
+  grid-column: 1; // Top-left
+  grid-row: 1;
+  align-self: center;
 `;
 
 const ProductImageSmall = styled.img`
-  width: 16.67vw; // ~1/3 of ProductImageLarge (50vw / 3)
-  max-width: 16.67vw; // Ensure responsiveness
+  width: 100%; // Fill grid cell
+  max-width: 90%; // Prevent overflow
   height: auto; // Maintain aspect ratio
   object-fit: contain; // Prevent distortion
+  border-radius: 10%;
 `;
 
 const Home = () => {
@@ -264,7 +270,16 @@ const Home = () => {
             <ProductText>
               To view more items & details tap on designated image
             </ProductText>
-            <ProductImageSmall src={usbCCharger} alt="USB-C Charger" />
+            <ProductImageSmall
+              src={usbCCharger}
+              alt="USB-C Charger"
+              style={{ gridColumn: 2, gridRow: 1 }} // Top-right
+            />
+            <ProductImageSmall
+              src={jblHeadset}
+              alt="JBL Headset"
+              style={{ gridColumn: 1, gridRow: 2 }} // Bottom-left
+            />
           </ProductInfo>
         </ProductsContent>
       </ProductsSection>
