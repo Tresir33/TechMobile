@@ -46,7 +46,7 @@ const CartContainer = styled.div`
 `;
 
 const LogoIcon = styled.img`
-  height: 4.5rem; // Increased from 3rem to ~3.2rem (6.67% larger)
+  height: 5.5rem; // Increased from 3rem to ~3.2rem (6.67% larger)
   width: auto;
 `;
 

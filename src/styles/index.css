@@ -1,14 +1,30 @@
-:root {
---Navbar: #000000;
---Bg-1: #1B1C1D; 
---text-1: #F2E782;
---sub-text: #928F88; 
---texts: #FFFFFF; 
---box: #999358;
---item-bg: #18528B; 
---bg-2: #434341;
 
+:root {
+  --Navbar: #000000;
+  --Bg-1: #1B1C1D; 
+  --text-1: #F2E782;
+  --sub-text: #928F88; 
+  --texts: #FFFFFF; 
+  --box: #999358;
+  --item-bg: #18528B; 
+  --bg-2: #434341;
+  --item-bg-sec: #0C467F;
+  
 }
+
+@font-face {
+  font-family: Archivo Narrow;
+  src: url(User/tresi/Projects/TechMobile/TechMobile/src/assets/fonts/static/ArchivoNarrow-Bold.ttf)
+}
+@font-face {
+  font-family: Libre Baskerville;
+  src: url(User/tresi/Projects/TechMobile/TechMobile/src/assets/fonts/Libre_Baskerville/LibreBaskerville-Italic.ttf)
+}
+@font-face {
+  font-family: Tenor Sans;
+  src: url(User/tresi/Projects/TechMobile/TechMobile/src/assets/fonts/Tenor_Sans/TenorSans-Regular.ttf)
+}
+
 
 body {
   margin: 0;

@@ -2,6 +2,8 @@ import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import '../styles/index.css';
 import wallpaper from '../assets/images/Wallpaper 4k.png';
+import samsungS24Plus from '../assets/images/Samsung S24 plus.webp';
+import usbCCharger from '../assets/images/USB-C charger.webp';
 
 // Styled-components for the homepage
 const HeroSection = styled.div`
@@ -13,6 +15,7 @@ const HeroSection = styled.div`
   background-position: center;
   background-repeat: no-repeat;
 `;
+
 
 const WelcomeText = styled.h1`
   position: absolute;
@@ -53,7 +56,7 @@ const SliderItem = styled.div`
   cursor: pointer; // Indicate clickability
   position: relative; // For positioning the reflection
 
-  &::after {
+  &:hover::after {
     content: '';
     position: absolute;
     top: 100%; // Place directly below the parallelogram
@@ -62,10 +65,10 @@ const SliderItem = styled.div`
     height: 5rem; // 1/4 of 20rem height
     background: linear-gradient(
       to bottom,
-      rgba(24, 82, 139, 0.8), // #18528B with opacity
+      rgba(12, 70, 127, 0.9), // #0C467F with 90% opacity for visibility
       transparent
     ); // Fade to transparent
-    transform: skewX(-30deg) scaleY(-0.25); // Mirror and scale to 1/4 height
+    transform: skewX(-30deg) scaleY(-1); // Mirror the parallelogram shape
     transform-origin: top;
   }
 `;
@@ -88,6 +91,64 @@ const ControlButton = styled.button`
   &:hover {
     background-color: var(--text-1);
   }
+`;
+
+const ProductsSection = styled.div`
+  width: 100%;
+  padding: 3.5rem 2rem; // Horizontal padding for content
+  background-color: var(--Bg-1); // Match slider background
+  display: flex;
+  flex-direction: column;
+  gap: 2vw; // 2% viewport width spacing
+`;
+
+const ProductsTitle = styled.h2`
+  font-size: 2.625rem; // Slightly smaller than WelcomeText for hierarchy
+  font-weight: 700;
+  font-family: Archivo Narrow;
+  color: #F2E782; // Specified title color
+  text-align: left;
+  margin: 0;
+  padding-bottom: 2vw; // 2% spacing below title
+`;
+
+const ProductsContent = styled.div`
+  display: flex;
+  flex-wrap: wrap; // Allow stacking on smaller screens
+  gap: 2rem; // Space between left and right halves
+  width: 100%;
+`;
+
+const ProductImageLarge = styled.img`
+  width: 40%; // Half the screen width
+  max-width: 40vw; // Ensure responsiveness
+  height: auto; // Maintain aspect ratio
+  object-fit: contain; // Prevent distortion
+  flex: 0 0 50%; // Fixed width for layout
+  border-radius: 1.2rem;
+  margin-left: 6%;
+`;
+
+const ProductInfo = styled.div`
+  flex: 0 0 45%; // Slightly less than 50% to account for gap
+  display: flex;
+  flex-direction: column; // Stack text and small image vertically
+  gap: 1rem; // Space between text and small image
+  justify-content: flex-start;
+`;
+
+const ProductText = styled.p`
+  font-size: 1rem;
+  color: #928F88; // Specified text color
+  margin: 0;
+  line-height: 1.5;
+`;
+
+const ProductImageSmall = styled.img`
+  width: 16.67vw; // ~1/3 of ProductImageLarge (50vw / 3)
+  max-width: 16.67vw; // Ensure responsiveness
+  height: auto; // Maintain aspect ratio
+  object-fit: contain; // Prevent distortion
 `;
 
 const Home = () => {
@@ -195,6 +256,18 @@ const Home = () => {
           ariaLabel="Scroll slider right"
         />
       </SliderControls>
+      <ProductsSection>
+        <ProductsTitle>OUR PRODUCTS</ProductsTitle>
+        <ProductsContent>
+          <ProductImageLarge src={samsungS24Plus} alt="Samsung Galaxy S24 Plus" />
+          <ProductInfo>
+            <ProductText>
+              To view more items & details tap on designated image
+            </ProductText>
+            <ProductImageSmall src={usbCCharger} alt="USB-C Charger" />
+          </ProductInfo>
+        </ProductsContent>
+      </ProductsSection>
     </>
   );
 };
