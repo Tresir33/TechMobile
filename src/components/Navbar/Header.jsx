@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import '../../styles/index.css';
 import logo from '../../assets/icons/Logo.svg';
@@ -56,6 +56,11 @@ const CartIcon = styled.img`
 `;
 
 const Header = () => {
+  const location = useLocation();
+  const isSignUpPage = location.pathname === '/signup';
+  const authLinkText = isSignUpPage ? 'Log In' : 'Sign Up';
+  const authLinkPath = isSignUpPage ? '/login' : '/signup';
+
   return (
     <HeaderContainer>
       <LogoContainer>
@@ -66,7 +71,7 @@ const Header = () => {
           <NavLink to="/">Home</NavLink>
           <NavLink to="/products">Products</NavLink>
           <NavLink to="/contact">Contact</NavLink>
-          <NavLink to="/signup">Sign Up</NavLink>
+          <NavLink to={authLinkPath}>{authLinkText}</NavLink>
         </NavLinks>
         <CartContainer>
           <Link to="/order">
