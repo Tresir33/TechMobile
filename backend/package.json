@@ -1,12 +1,21 @@
 {
-  "name": "backend",
+  "name": "techmobile-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend for TechMobile e-commerce app",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "express": "^4.18.2",
+    "firebase": "^10.7.0",
+    "firebase-admin": "^12.0.0",
+    "pg": "^8.11.3",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
 }

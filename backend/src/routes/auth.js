@@ -1,27 +1,32 @@
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import admin from 'firebase-admin';
 import { initializeApp } from 'firebase/app';
-import { getAuth as getAdminAuth, createUser } from 'firebase-admin/auth';
+import { getAuth } from 'firebase-admin/auth';
 import { Pool } from 'pg';
 import express from 'express';
 import dotenv from 'dotenv';
-import admin from 'firebase-admin';
 
 dotenv.config();
 const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
-initializeApp(firebaseConfig);
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS);
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+initializeApp(firebaseConfig); // Client SDK for compatibility (optional)
+console.log('Initializing Firebase Admin...');
+admin.initializeApp({
+  credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS))
+});
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://postgres:password@db:5432/ecommerce'
+  connectionString: process.env.DATABASE_URL || 'postgres://postgres:Tresilaho%4010@localhost:5432/ecommerce'
 });
 
 const router = express.Router();
 
 async function signUp(email, password, userData) {
   try {
-    const userRecord = await admin.auth().createUser({ email, password });
-    await setDoc(doc(getFirestore(), 'users', userRecord.uid), {
+    console.log('Creating user with email:', email);
+    const auth = getAuth();
+    const userRecord = await auth.createUser({ email, password });
+    console.log('User created, UID:', userRecord.uid);
+    console.log('Writing to Firestore: users/', userRecord.uid);
+    await admin.firestore().collection('users').doc(userRecord.uid).set({
       user_id: userRecord.uid,
       name: userData.name,
       surname: userData.surname,
@@ -30,15 +35,18 @@ async function signUp(email, password, userData) {
       gender: userData.gender,
       role: userData.role
     });
+    console.log('Writing to PostgreSQL: user_id=', userRecord.uid, 'role=', userData.role);
     await pool.query('INSERT INTO users (user_id, role) VALUES ($1, $2)', [userRecord.uid, userData.role]);
     return { success: true, userId: userRecord.uid };
   } catch (error) {
+    console.error('Signup error:', error);
     throw new Error('Failed to sign up: ' + error.message);
   }
 }
 
 router.post('/signup', async (req, res) => {
   const { email, password, name, surname, phone_number, date_of_birth, gender, role } = req.body;
+  console.log('Signup request body:', req.body);
   if (!email || !password || !name || !surname || !role) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
