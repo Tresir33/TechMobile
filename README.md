@@ -44,7 +44,7 @@ install vscode
 4. Github
 
     ```bash/prompt/powershell etc...
-    nevigate to project root & git clone git@github.com:MelvinAssi/FitnessDev.git
+    nevigate to project root & git clone git@github.com:Tresir33/TechMobile.git
     ```
 
 ## Start frontend/backend project
