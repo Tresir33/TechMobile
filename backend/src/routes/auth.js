@@ -4,10 +4,11 @@ import { getAuth } from 'firebase-admin/auth';
 import { Pool } from 'pg';
 import express from 'express';
 import dotenv from 'dotenv';
+import fetch from 'node-fetch';
 
 dotenv.config();
 const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
-initializeApp(firebaseConfig); // Client SDK for compatibility (optional)
+initializeApp(firebaseConfig);
 console.log('Initializing Firebase Admin...');
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_ADMIN_CREDENTIALS))
@@ -19,9 +20,26 @@ const pool = new Pool({
 
 const router = express.Router();
 
-async function signUp(email, password, userData) {
+async function verifyRecaptcha(token) {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Add to .env
+  const response = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `secret=${secretKey}&response=${token}`
+  });
+  const data = await response.json();
+  return data.success;
+}
+
+async function signUp(email, password, userData, recaptchaToken) {
   try {
     console.log('Creating user with email:', email);
+    // Verify reCAPTCHA
+    const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
+    if (!isRecaptchaValid) {
+      throw new Error('Invalid reCAPTCHA token');
+    }
+
     const auth = getAuth();
     const userRecord = await auth.createUser({ email, password });
     console.log('User created, UID:', userRecord.uid);
@@ -45,9 +63,9 @@ async function signUp(email, password, userData) {
 }
 
 router.post('/signup', async (req, res) => {
-  const { email, password, name, surname, phone_number, date_of_birth, gender, role } = req.body;
+  const { email, password, name, surname, phone_number, date_of_birth, gender, role, recaptchaToken } = req.body;
   console.log('Signup request body:', req.body);
-  if (!email || !password || !name || !surname || !role) {
+  if (!email || !password || !name || !surname || !role || !recaptchaToken) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   if (['employee', 'admin'].includes(role) && (!date_of_birth || !gender)) {
@@ -64,7 +82,7 @@ router.post('/signup', async (req, res) => {
       date_of_birth: date_of_birth ? new Date(date_of_birth) : null,
       gender: gender ? Number(gender) : null,
       role
-    });
+    }, recaptchaToken);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

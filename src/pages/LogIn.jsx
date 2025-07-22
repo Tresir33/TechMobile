@@ -1,10 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import backgroundImage from '../assets/images/4k_background.jpg'; // Adjust path based on project structure
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase.js'; // Updated import
+import backgroundImage from '../assets/images/4k_background.jpg';
 
-// Styled-components for the LogIn page
+// Styled-components
 const LogInContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,7 +31,7 @@ const LogInFormContainer = styled.div`
 `;
 
 const LogInTitle = styled.h1`
-  font-size: 2.625rem; // 42px / 16 = 2.625rem
+  font-size: 2.625rem;
   font-family: "Archivo Narrow", sans-serif;
   color: #ffffff;
   text-align: center;
@@ -49,7 +51,7 @@ const FormGroup = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 1.5rem; // 24px / 16 = 1.5rem
+  font-size: 1.5rem;
   font-family: "Tenor Sans", sans-serif;
   color: #ffffff;
   margin-bottom: 0.5rem;
@@ -59,7 +61,7 @@ const Input = styled.input`
   background-color: #ffffff;
   border: none;
   padding: 0.75rem;
-  font-size: 1.5rem; // 24px / 16 = 1.5rem
+  font-size: 1.5rem;
   font-family: "Tenor Sans", sans-serif;
   color: #000000;
   border-radius: 4px;
@@ -74,8 +76,34 @@ const ReCAPTCHAContainer = styled.div`
   margin: 1.5rem 0;
 `;
 
+const SubmitButton = styled.button`
+  background-color: var(--item-bg, #18528B);
+  border: none;
+  padding: 0.75rem;
+  font-size: 1.5rem;
+  font-family: "Tenor Sans", sans-serif;
+  color: #FFFFFF;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  &:hover {
+    opacity: 0.9;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  font-size: 1rem;
+  font-family: "Tenor Sans", sans-serif;
+  color: #FF5555;
+  text-align: center;
+`;
+
 const SignUpText = styled.p`
-  font-size: 1.5rem; // 24px / 16 = 1.5rem
+  font-size: 1.5rem;
   font-family: "Tenor Sans", sans-serif;
   color: #ffffff;
   text-align: center;
@@ -91,33 +119,87 @@ const SignUpLink = styled(Link)`
 `;
 
 const LogIn = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [error, setError] = useState('');
   const recaptchaRef = useRef();
+  const navigate = useNavigate();
 
-  const handleReCAPTCHAChange = (value) => {
-    console.log('ReCAPTCHA token:', value);
-    // For client-side only, the token is logged. Later, send to backend for verification.
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleReCAPTCHAChange = (token) => {
+    setRecaptchaToken(token);
+    setError('');
+    console.log('reCAPTCHA token:', token);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (!recaptchaToken) {
+      setError('Please complete the reCAPTCHA');
+      return;
+    }
+
+    try {
+      console.log('Submitting login request:', { email: formData.email, password: '[REDACTED]' });
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      console.log('Login successful, redirecting to Home');
+      setFormData({ email: '', password: '' });
+      setRecaptchaToken(null);
+      recaptchaRef.current.reset();
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error.message.includes('auth/invalid-credential') ? 'Invalid email or password' : error.message);
+    }
   };
 
   return (
     <LogInContainer>
       <LogInFormContainer>
         <LogInTitle>Log In</LogInTitle>
-        <Form>
+        <Form onSubmit={handleSubmit}>
           <FormGroup>
             <Label htmlFor="email">Email</Label>
-            <Input type="email" id="email" placeholder="Enter your email" required />
+            <Input
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </FormGroup>
           <FormGroup>
             <Label htmlFor="password">Password</Label>
-            <Input type="password" id="password" placeholder="Enter your password" required />
+            <Input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
           </FormGroup>
           <ReCAPTCHAContainer>
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey="6LdiV4MrAAAAAGwvTBc3a_fGoW6Zqg4BMDK9jgCw" // Replace with your Site Key
-              onChange={handleReCAPTCHAChange}
-            />
+            {import.meta.env.VITE_RECAPTCHA_SITE_KEY ? (
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={handleReCAPTCHAChange}
+              />
+            ) : (
+              <ErrorMessage>reCAPTCHA site key is missing</ErrorMessage>
+            )}
           </ReCAPTCHAContainer>
+          <SubmitButton type="submit" disabled={!recaptchaToken}>
+            Log In
+          </SubmitButton>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
         <SignUpText>
           Don’t have an account? <SignUpLink to="/signup">Sign up!</SignUpLink>

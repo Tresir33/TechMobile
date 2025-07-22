@@ -22,7 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-backend/serviceAccountKey.json
-backend/techmobile-e62fe-firebase-adminsdk-fbsvc-a917fc36b5.json
 .env
-backend/.env
+node_modules/
