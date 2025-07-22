@@ -1,29 +1,45 @@
-const express = require('express');
-const { Pool } = require('pg');
-const path = require('path');
-const app = express();
+import express from 'express';
+   import { Pool } from 'pg';
+   import path from 'path';
+   import { fileURLToPath } from 'node:url';
+   import cors from 'cors';
+   import portfinder from 'portfinder';
 
-// PostgreSQL connection
-const pool = new Pool({
-  host: 'your_host',
-  user: 'your_username',
-  database: 'your_database',
-  password: 'your_password',
-  port: 5432,
-});
+   const app = express();
 
-// Serve static images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+   // Derive __dirname for ES modules
+   const __filename = fileURLToPath(import.meta.url);
+   const __dirname = path.dirname(__filename);
 
-// API to fetch products
-app.get('/api/products', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM products');
-    res.json(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+   // PostgreSQL connection
+   const pool = new Pool({
+     host: 'localhost',
+     user: 'postgres',
+     database: 'ecommerce',
+     password: 'Tresilaho@10',
+     port: 5432,
+   });
 
-app.listen(5000, () => console.log('Server running on port 5000'));
+   // Enable CORS
+   app.use(cors());
+
+   // Serve static images from backend/src/uploads/images
+   app.use('/uploads', express.static(path.join(__dirname, '../src/uploads/images')));
+
+   // API to fetch products
+   app.get('/api/products', async (req, res) => {
+     try {
+       const result = await pool.query('SELECT * FROM products');
+       res.json(result.rows);
+     } catch (error) {
+       console.error(error);
+       res.status(500).json({ error: 'Internal server error' });
+     }
+   });
+
+   // Find an available port
+   portfinder.basePort = 5000;
+   portfinder.getPort((err, port) => {
+     if (err) throw err;
+     app.listen(port, () => console.log(`Server running on port ${port}`));
+   });

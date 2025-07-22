@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import '../styles/index.css';
+import Cookies from 'js-cookie';
 import wallpaper from '../assets/images/Wallpaper 4k.png';
 import samsungS24Plus from '../assets/images/Samsung S24 plus.webp';
 import usbCCharger from '../assets/images/USB-C charger.webp';
@@ -157,8 +158,69 @@ const ProductImageSmall = styled.img`
   border-radius: 10%;
 `;
 
+// Styled component for the complex cookie popup
+const CookiePopup = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background-color: var(--Bg-1);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: var(--texts);
+  font-family: "Archivo Narrow";
+  z-index: 1000;
+  text-align: left;
+`;
+
+const CookieForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const CookieCheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+`;
+
+const CookieButton = styled.button`
+  background-color: var(--box);
+  color: var(--texts);
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: flex-end;
+  &:hover {
+    background-color: var(--text-1);
+  }
+`;
+
 const Home = () => {
   const sliderRef = useRef(null);
+  const [showCookiePopup, setShowCookiePopup] = useState(false);
+  const [cookiePreferences, setCookiePreferences] = useState({
+    essential: true, // Essential cookies are always enabled
+    analytics: false,
+    marketing: false,
+    terms: false,
+  });
+
+  // Check if cookie preferences exist on mount
+  useEffect(() => {
+    const savedPreferences = Cookies.get('cookiePreferences');
+    if (savedPreferences) {
+      setCookiePreferences(JSON.parse(savedPreferences));
+      setShowCookiePopup(false); // Hide if preferences exist
+    } else {
+      setShowCookiePopup(true); // Show if no preferences
+    }
+  }, []);
 
   // 6 items for the slider, duplicated for looping
   const items = Array(6).fill(null); // 6 items as specified
@@ -240,6 +302,26 @@ const Home = () => {
     </ControlButton>
   );
 
+  // Handle checkbox changes
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setCookiePreferences((prev) => ({
+      ...prev,
+      [name]: checked,
+    }));
+  };
+
+  // Save preferences and hide popup
+  const handleSavePreferences = (e) => {
+    e.preventDefault();
+    if (!cookiePreferences.terms) {
+      alert('You must accept the Terms & Conditions to proceed.');
+      return;
+    }
+    Cookies.set('cookiePreferences', JSON.stringify(cookiePreferences), { expires: 365 }); // 1 year expiration
+    setShowCookiePopup(false);
+  };
+
   return (
     <>
       <HeroSection>
@@ -283,6 +365,51 @@ const Home = () => {
           </ProductInfo>
         </ProductsContent>
       </ProductsSection>
+      {showCookiePopup && (
+        <CookiePopup>
+          <CookieForm onSubmit={handleSavePreferences}>
+            <p>We use cookies to enhance your experience. Please select your preferences:</p>
+            <CookieCheckboxLabel>
+              <input
+                type="checkbox"
+                name="essential"
+                checked={cookiePreferences.essential}
+                onChange={handleCheckboxChange}
+                disabled
+              />
+              Essential Cookies (always enabled)
+            </CookieCheckboxLabel>
+            <CookieCheckboxLabel>
+              <input
+                type="checkbox"
+                name="analytics"
+                checked={cookiePreferences.analytics}
+                onChange={handleCheckboxChange}
+              />
+              Analytics Cookies
+            </CookieCheckboxLabel>
+            <CookieCheckboxLabel>
+              <input
+                type="checkbox"
+                name="marketing"
+                checked={cookiePreferences.marketing}
+                onChange={handleCheckboxChange}
+              />
+              Marketing Cookies
+            </CookieCheckboxLabel>
+            <CookieCheckboxLabel>
+              <input
+                type="checkbox"
+                name="terms"
+                checked={cookiePreferences.terms}
+                onChange={handleCheckboxChange}
+              />
+              I accept the Terms & Conditions
+            </CookieCheckboxLabel>
+            <CookieButton type="submit">Save Preferences</CookieButton>
+          </CookieForm>
+        </CookiePopup>
+      )}
     </>
   );
 };
