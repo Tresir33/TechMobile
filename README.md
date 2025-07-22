@@ -1,4 +1,4 @@
-# Welcome to my To-do list mobile app - quick summary👋
+# Welcome to my TechMobile app - quick summary👋
 
 This is an ecommerce product sales app where we sell phones & accesories to clients and admin oversees it all.
 
